@@ -1,0 +1,117 @@
+openapi: 3.0.0
+info:
+  title: Bottle Pay Wallet API
+  version: '1.0'
+  license:
+    name: MIT
+  termsOfService: 'https://about.bottle.li/terms.html'
+  contact:
+    name: Bottle Pay
+    url: 'https://about.bottle.li'
+    email: support@bottle.li
+  description: |
+    The Wallet APIs allow the User's of Bottle Pay to grant permission to applications to access their account details and associated wallet.
+servers:
+  - url: 'https://bottle.dev'
+    description: Sandbox
+paths:
+  /api/user:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      description: Read public details of the authenticated User
+      operationId: getUser
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              examples:
+                User:
+                  value:
+                    id: 7
+                    name: Block Matrix
+                    email: pete@blockmatrix.network
+                    avatar: 'https://cdn.sandbox.bottle.dev/userimg/eda85cd0fb4c02302c83306142f7354801c27e678d4bcb8aa83e7c6bc7bb56d5.jpg'
+                    currency: GBP
+                    locale: en-GB
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                Scope:
+                  value:
+                    error: 'Access token does not have the required scope (user:profile).'
+      security:
+        - bottle_auth:
+            - 'user:profile'
+components:
+  schemas:
+    Id:
+      type: integer
+      format: int64
+      readOnly: true
+    Error:
+      type: object
+      description: Generic error format
+      properties:
+        error:
+          type: string
+          description: Description of error
+    User:
+      type: object
+      description: The default User model
+      properties:
+        id:
+          description: Unique User ID
+          allOf:
+            - $ref: '#/components/schemas/Id'
+        name:
+          type: string
+          default: null
+          description: Display Name
+        email:
+          type: string
+          default: null
+          description: |
+            Email Address
+          format: email
+        avatar:
+          type: string
+          default: null
+          format: uri
+          description: Profile picture
+        currency:
+          type: string
+          default: USD
+          description: Preferred fiat currency
+          example: GBP
+          minLength: 3
+          maxLength: 3
+        locale:
+          type: string
+          default: en-GB
+          description: Preferred language
+          example: ko-KR
+          minLength: 5
+          maxLength: 5
+      required:
+        - id
+  securitySchemes:
+    bottle_auth:
+      description: |
+        Get access to data while protecting your account credentials. OAuth2 is also a safer and more secure way to give you access.
+      type: oauth2
+      flows:
+        authorizationCode:
+          scopes:
+            'user:profile': 'View profile data, including display name, avatar, primary public key, and account settings.'
+            'wallet:invoice': Generate invoices to allow receiving of funds.
+          tokenUrl: 'https://bottle.dev/oauth/token'
+          refreshUrl: 'https://bottle.dev/oauth/token'
+          authorizationUrl: 'https://bottle.dev/oauth/authorize'
