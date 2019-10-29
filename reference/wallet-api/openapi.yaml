@@ -10,7 +10,7 @@ info:
     url: 'https://about.bottle.li'
     email: support@bottle.li
   description: |
-    The Wallet APIs allow the User's of Bottle Pay to grant permission to applications to access their account details and associated wallet.
+    The Wallet APIs allows the User's of Bottle Pay to grant permission to applications to access their account details and associated wallet.
 servers:
   - url: 'https://bottle.dev'
     description: Sandbox
